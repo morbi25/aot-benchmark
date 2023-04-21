@@ -83,11 +83,14 @@ class DeAOTInferEngine(AOTInferEngine):
         img_embs = None
         for aot_engine, separated_mask, separated_obj_num in zip(
                 self.aot_engines, separated_masks, separated_obj_nums):
-            aot_engine.add_reference_frame(img,
-                                           separated_mask,
-                                           obj_nums=[separated_obj_num],
-                                           frame_step=frame_step,
-                                           img_embs=img_embs)
+            if aot_engine.obj_nums is None or aot_engine.obj_nums[0] < separated_obj_num:
+                aot_engine.add_reference_frame(img,
+                                            separated_mask,
+                                            obj_nums=[separated_obj_num],
+                                            frame_step=frame_step,
+                                            img_embs=img_embs)
+            else:
+                aot_engine.update_short_term_memory(separated_mask)
             if img_embs is None:  # reuse image embeddings
                 img_embs = aot_engine.curr_enc_embs
 

@@ -623,7 +623,8 @@ class AOTInferEngine(nn.Module):
         return pred_id_logits
 
     def update_memory(self, curr_mask, skip_long_term_update=False):
-        separated_masks, _ = self.separate_mask(curr_mask, self.obj_nums)
+        _curr_mask = F.interpolate(curr_mask,self.input_size_2d)
+        separated_masks, _ = self.separate_mask(_curr_mask, self.obj_nums)
         for aot_engine, separated_mask in zip(self.aot_engines,
                                               separated_masks):
             aot_engine.update_short_term_memory(separated_mask, 
